@@ -11,7 +11,7 @@ Tudo isso traz riqueza e valor em qualquer projeto em que for aplicado, seguindo
 ## Design Patterns
 
 ### Repository
-O Design Pattern Repository foi criado por Erik Evans no livro Domain Driven Design (2003) que é também mencionado em [Prof EAA ( Patterns of Enterprise Application Architecture ) ](https://www.martinfowler.com/eaaCatalog/repository.html)do Martin Fowler.
+O Design Pattern Repository foi criado por Erik Evans no livro Domain Driven Design (2003) que é também mencionado em [ Prof EAA ( Patterns of Enterprise Application Architecture ) ](https://www.martinfowler.com/eaaCatalog/repository.html)do Martin Fowler.
 
 Segue abaixo um trecho do livro [Implementing Domain-Driven Design - Vaughn Vernon](https://books.google.com.br/books/about/Implementing_Domain_Driven_Design.html?id=X7DpD5g3VP8C&source=kp_cover&redir_esc=y).
 
@@ -244,6 +244,7 @@ public class AccountAddressTransformer {
     }
 }
 ```
+
 ### FixtureFactory (Testes)
 
  Fixture nada mais é do que um template de dados que utilizamos em Cenários de Teste. Por exemplo, uma instância do objeto Account com os dados de BillingAddress, ShippingAddress, etc.
@@ -338,7 +339,7 @@ public class AccountRepositoryTest {
 
 Não tem como falar de testes unitários sem falar de TDD (Test Driven Development) que é uma das práticas do Extreme Programming (XP). Essas práticas foram formuladas por _Kent Beck_ e _Ron Jeffries_ à partir de suas experiências no desenvolvimento de um sistema de pagamento para a Chrysler.
 
-A maneira que TDD trabalha é através de requisitos, ou Histórias de usuário que são decompostas em um conjunto de comportamentos que são premissas para atender o requisito.
+A maneira que TDD trabalha é através de requisitos, ou users story que são decompostas em um conjunto de comportamentos que são premissas para atender o requisito.
 
 Para cada comportamento do sistema, a primeira coisa a se fazer é escrever um teste unitário que irá testar este comportamento. Um dos benefícios de se escrever o teste primeiro é que ele proporciona uma visão mais empática com relação a como aquela funcionalidade será consumida.
 
