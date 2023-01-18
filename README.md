@@ -293,7 +293,7 @@ Note que no cenário de teste, não faz sentido utilizarmos repositories para qu
 
 #### Testando Classes de Repositório utilizando Fixture Factory
 
-> A principal característica de um Repositório (Repository) é interação com banco de dados, dado isso ela este tipo de classe necessita de **Testes Integrados** para validar vários elementos como Campos, Objetos e fluxo transacional.
+> A principal característica de um Repositório (Repository) é interação com banco de dados. Dado isso, este tipo de classe necessita de **Testes Integrados** para validar vários elementos como Campos, Objetos e fluxo transacional.
 
 
 ##### **AccountRepositoryTest**
