@@ -185,7 +185,7 @@ public class Filter {
 ```
 > Não é recomendado que a classe Filter tenha acesso ao **Repository**, ela deve somente receber a lista para ser filtrada, indexada ou agrupada, pois assim ela tem somente esta responsabilidade.
 
-Um ótimo cenário para essa implementação é criar uma AccountFilter extendendo de Filter, onde a classe herdada terá os métodos "genéricos" para serem implementados ou reutilizados na classe especializada.
+Um ótimo cenário para essa implementação é criar uma AccountFilter extendendo de Filter, onde a classe herdada terá os métodos "genéricos" para serem implementados ou reutilizados.
 
 #### Implementação da Filter
 
