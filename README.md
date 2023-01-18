@@ -512,11 +512,11 @@ public class AccountControllerTest {
         String payload = '[ {"Id":"001f000001ONeLzAAL","Name":"Test"} ]';
 
         AccountController.service.setRepository (
-            new AccountRepositoryTest.AccountRepositoryMock (payload) );
+            new AccountRepositoryTest.AccountRepositoryMock(payload) );
 
         Test.startTest();
 
-        List<Account> accounts = AccountController.findByName ();
+        List<Account> accounts = AccountController.findByName();
 
         Test.stopTest();
 
