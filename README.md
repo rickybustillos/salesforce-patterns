@@ -193,9 +193,10 @@ Um ótimo cenário para essa implementação é criar uma AccountFilter extenden
 public class AccountFilter extends Filter {
 
     public List<Account> byChangedAppointmentDate ( List<Account> newAccounts, Map<Id, Account> oldAccounts ) {
-        return this.byChangedFields(
 
-        );
+        List<String> changedFields = new List<String>{ 'AppointmentDate__c' };
+
+        return this.byChangedFields( oldAccounts, changedFields );
     }
 }
 ```
