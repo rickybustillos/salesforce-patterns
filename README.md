@@ -481,8 +481,10 @@ global with sharing class AccountController {
 
     @HttpGet
     global static List<Account> findByName () {
+
         String name = RestContext.request.params.get('name');
-        return service.findAccountByName();
+
+        return service.findAccountByName( name );
     }
 
 }
