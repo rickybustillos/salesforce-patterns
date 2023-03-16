@@ -8,8 +8,8 @@ While some suggestions are more strict than others, **you should always practice
 If following the guide causes unnecessary hoop-jumping or otherwise less-readable code, *readability trumps the guide*.
 However, if the more 'readable' variant comes with perils or pitfalls, readability may be sacrificed.
 
-## Table of contents
 ---
+## Table of contents
 
 - [Concerns about Custom Objects and Custom Fields naming](#concerns-about-custom-objects-and-custom-fields-naming)
 - [Apex Coding Style](#apex-coding-style)
@@ -22,10 +22,10 @@ However, if the more 'readable' variant comes with perils or pitfalls, readabili
 - [Writing testable code](#writing-testable-code)
 - [Documentation](#documentation)
 
-
+---
 ## Concerns about Custom Objects and Custom Fields naming
 
-Avoid prepositions in APIName
+Avoid prepositions in API Name
 
 Avoid use the automatic platform label to api name conversion for labels with special characters. Examples:
 
@@ -34,15 +34,22 @@ Avoid use the automatic platform label to api name conversion for labels with sp
 	Label:   Tipo de Serviço
 	ApiName: Tipo_de_Servi_o__c
 
-	Label:   Configuração Dinamica
-	ApiName: Configura__o_Dinamica__c
+	Label:   Configuração Dinâmica
+	ApiName: Configura__o_Din_mica__c
 
 	// Right
 	Label:   Tipo Serviço
 	ApiName: TipoServico__c
 
-	Label:   Configuração Dinamica
+	Label:   Configuração Dinâmica
 	ApiName: ConfiguracaoDinamica__c
+
+    // Better
+    Label: Tipo Serviço
+    ApiName: ServiceType__c
+
+	Label:   Configuração Dinâmica
+	ApiName: DynamicConfiguration__c
 
 Avoid use the own type for describe the custom field api name. Example:
 
@@ -55,26 +62,24 @@ Avoid use the own type for describe the custom field api name. Example:
 	// Right
 	CustomField:              Tipo__c
 
+---
 
 ## Apex Coding Style
-------------------
 
 The structure of this document is based on the [ Google Java Style ](https://google.github.io/styleguide/javaguide.html) reference and is work in progress.
 
 ## Source Type Basic
-------------------
-
 ### File Encoding: UTF-8
 Source files must be encoded using *UTF-8*.
 
 ### Indentation
 
-- Indentation uses spaces (not tabs)
+- Indentation uses 4 spaces (not tabs)
 - Unix (LF), not DOS (CRLF) line endings
 - Eliminate all trailing whitespace
 	- On Linux, Mac, etc.: ``` find . -type f -name "*.cls" -exec perl -p -i -e "s/[ \t]$//g" {} \;```
 
-### Apex source file organization
+### Apex Class source file organization
 
 The following governs how the elements of a source file are organized:
 
@@ -83,7 +88,6 @@ The following governs how the elements of a source file are organized:
 - constructors
 - (private) methods called from constructors
 - static factory methods
-- JavaBean properties (i.e., getters and setters)
 - method implementations coming from interfaces
 - private or protected templates that get called from method implementations coming from interfaces
 - other methods
@@ -93,11 +97,11 @@ Note that private or protected methods called from method implementations should
 
 Above all, the organization of the code should feel natural.
 
-## Declaration Types
 ------------------
+## Declaration Types
 ### Pascal Case
 
-Example: **B**ack**C**olor
+Example: BackColor
 
 ``` java
 
@@ -109,14 +113,25 @@ class BackColor {
 
 ### camel Case
 
-> Example: **b**ack**C**olor
+Example: backColor
+``` java
 
-#### UPPER_CASE
+public void backColor () {}
+```
 
-> Example: BACK_COLOR
+### UPPER_CASE
 
-## Declaration
+Example: BACK_COLOR
+
+``` java
+public static final String BACK_COLOR;
+```
+
+### snake case (do not use)
+Example: back_color
+
 ----------------
+## Declaration
 
 ### Classes e Interfaces
 
@@ -130,8 +145,6 @@ public class SalesOrder  {
 
     Supplier supplier;
     Customer customer;
-    Billto billto;
-    Shipto shito;
 
     public SalesOrder() {
     }
@@ -145,7 +158,7 @@ public class SalesOrder  {
 
 > **camelCase**
 >
-> Exemple: public void  **sendToApproval** () {}.
+> Exemple: public void  **sendToApproval** () { }
 
 ``` java
 
@@ -181,14 +194,12 @@ public class SalesOrder  {
 }
 
 public enum SalesOrderStatusType  {
-
     NEW,
     WAITING_FOR_APPROVAL,
     APPROVED,
     SHIPPED,
     BILLED,
     CLOSED
-
 }
 
 ```
@@ -213,38 +224,40 @@ Examples:
 
 ``` java
 
-	// acceptable
+    // acceptable
     if ( condition() ) {
         try {
             something();
+
       	} catch (ProblemException e) {
-        	recover();
+            recover();
       	}
     } else if (otherCondition()) {
       	somethingElse();
+
     } else {
       	lastThing();
     }
 
-	// acceptable
-	for ( String value : values ) {
-		// some code;
-	}
+    // acceptable
+    for ( String value : values ) {
+    	// some code;
+    }
 
-	// acceptable
-	for ( String value : values ) someOperation();
+    // acceptable
+    for ( String value : values ) someOperation();
 
-	// acceptable
+    // acceptable
     if (condition()) return;
 
-	// not acceptable
-	if (condition()) something();
-	else if (otherCondition()) somethingElse();
-	else lastThing();
+    // not acceptable
+    if (condition()) something();
+    else if (otherCondition()) somethingElse();
+    else lastThing();
 
-	// not acceptable
-	try {  something(); } catch (ProblemException e) { recover(); }
-	try {  something(); } catch (ProblemException e) {}
+    // not acceptable
+    try {  something(); } catch (ProblemException e) { recover(); }
+    try {  something(); } catch (ProblemException e) {}
 
 
 ```
@@ -299,7 +312,7 @@ Method declaration continuations.
       ...
     }
 
-    // Also acceptable, but may be awkward depending on the column depth of the opening parenthesis.
+    // Awkward
     public String downloadAnInternet(Internet internet,
                                      Tubes tubes,
                                      Blogosphere blogs,
@@ -338,15 +351,6 @@ Don't break up a statement unnecessarily.
     //   - Line breaks are based on line length, not logic.
     Iterable<Module> modules = ImmutableList.<Module>builder().add(new LifecycleModule())
         .add(new AppLauncherModule()).addAll(application.getModules()).build();
-
-    // Good.
-    //   - Calls are logically separated.
-    //   - However, the trailing period logically splits a statement across two lines.
-    Iterable<Module> modules = ImmutableList.<Module>builder().
-        add(new LifecycleModule()).
-        add(new AppLauncherModule()).
-        addAll(application.getModules()).
-        build();
 
     // Better.
     //   - Method calls are isolated to a line.
@@ -401,11 +405,13 @@ This rule is never interpreted as requiring or forbidding additional space at th
 **Terminology Note:** Horizontal alignment is the practice of adding a variable number of additional spaces in your code with the goal of making certain tokens appear directly below certain other tokens on previous lines.
 
 ``` java
-private int x; // this is fine
-private Color color; // this too
+private String name; // this is fine
+private String age; // this too
+private List<Color> colors; // this too
 
-private int   x;      // not acceptable
-private Color color;  // may leave it unaligned
+private String      name; // not acceptable
+private String      age; // may leave it unaligned
+private List<Color> colors;
 
 ```
 
@@ -414,18 +420,14 @@ private Color color;  // may leave it unaligned
 
 ##### Modifier order
 
-We follow the [Java Language Specification](http://docs.oracle.com/javase/specs/) for modifier
-ordering (sections
-[8.1.1](http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.1.1),
-[8.3.1](http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.3.1) and
-[8.4.3](http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.4.3)).
+We follow the [Java Language Specification](http://docs.oracle.com/javase/specs/) for modifier ordering (sections [8.1.1](http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.1.1), [8.3.1](http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.3.1) and [8.4.3](http://docs.oracle.com/javase/specs/jls/se7/html/jls-8.html#jls-8.4.3)).
 
 ``` java
     // Bad.
-    final volatile private String value;
+    final static private String value;
 
     // Good.
-    private final volatile String value;
+    private final static String value;
 ```
 
 ## Variable naming
@@ -436,20 +438,20 @@ ordering (sections
     // Bad.
     //   - Field names give little insight into what fields are used for.
     class User {
- 		private final int a;
-      	private final String m;
+        private final int a;
+        private final String m;
       	...
     }
 
     // Good.
     class User {
-    	private final int ageInYears;
-      	private final String maidenName;
+        private final int ageInYears;
+        private final String maidenName;
         ...
     }
 ```
 
-#### Use Intention-Revealing Names
+#### Use Intention-Revealing Names and Avoid Disinformation
 
 It is easy to say that names should reveal intent. What we want to impress upon you is that
 we are serious about this. Choosing good names takes time but saves more than it takes.
@@ -458,20 +460,23 @@ reads your code (including you) will be happier if you do
 
 ``` java
 // Bad
-public List<int[]> getThem() {
-    List<int[]> list1 = new ArrayList<int[]>();
-    for (int[] x : theList)
+public List<Integer[]> getThem() {
+    List<Integer[]> list1 = new List<Integer[]>();
+    for (Integer[] x : theList)
         if (x[0] == 4)
             list1.add(x);
     return list1;
 }
 
 // Good
-public List<int[]> getFlaggedCells() {
-    List<int[]> flaggedCells = new ArrayList<int[]>();
-    for (int[] cell : gameBoard)
-        if (cell[STATUS_VALUE] == FLAGGED)
-            flaggedCells.add(cell);
+public List<Integer[]> getFlaggedCells() {
+
+    List<Integer[]> flaggedCells = new List<Integer[]>();
+
+    for ( Integer[] cell : gameBoard ) {
+        if ( cell[STATUS_VALUE] == FLAGGED ) flaggedCells.add( cell );
+    }
+
     return flaggedCells;
 }
 
@@ -486,22 +491,27 @@ Avoid embedding the field type in the field name.
 ``` java
 
     // Bad.
-	List<Account> accountList;
-	Set<Account> accountSet;
-	Map<Integer, User> idToUserMap;
+    List<Account> accountList;
+    Set<Account> accountSet;
+    Map<Integer, User> idToUserMap;
     String valueString;
 
     // Good.
-	// for all collections use plural !!!!!
-	List<Account> accounts;
-	Set<Account> accounts;
+    // for all collections use plural !!!!!
+    List<Account> accounts;
+    Set<Account> accounts;
 
-	// Map structure index something or group something
-	Map<Integer, User> usersById;
+    // Map structure index something or group something
+    Map<Integer, User> usersById;
 
-	Map<String, List<User>> usersByState;
+    Map<String, List<User>> usersByState;
 
+    // individual object in singular
     String value;
+
+    Account account;
+
+    Opportunity opportunity;
 
 ```
 
@@ -516,29 +526,6 @@ is too complex and should be broken apart.
 
     // Good.
     String value;
-```
-
-#### Avoid Disinformation
-
-``` java
-// Bad
-public List<int[]> getThem() {
-    List<int[]> list1 = new ArrayList<int[]>();
-    for (int[] x : theList)
-        if (x[0] == 4)
-            list1.add(x);
-    return list1;
-}
-
-// Good
-public List<int[]> getFlaggedCells() {
-    List<int[]> flaggedCells = new ArrayList<int[]>();
-    for (int[] cell : gameBoard)
-        if (cell[STATUS_VALUE] == FLAGGED)
-            flaggedCells.add(cell);
-    return flaggedCells;
-}
-
 ```
 
 ### Space pad operators and equals.
@@ -569,7 +556,7 @@ It's even good to be *really* obvious.
 
 
 ``` java
-    if ((values != null) && (10 > values.size())) {
+    if ( (values != null) && (10 > values.size()) ) {
       ...
     }
 ```
@@ -585,15 +572,17 @@ or `Throwable` so you don't have to worry about what type was thrown.  This is u
     // Bad.
     //   - If a RuntimeException happens, the program continues rather than aborting.
     try {
-      storage.insertUser(user);
-    } catch (Exception e) {
-      LOG.error("Failed to insert user.");
+        repository.save( user );
+
+    } catch ( Exception e ) {
+        LOG.error("Failed to insert user.");
     }
 
     try {
-      storage.insertUser(user);
-    } catch (StorageException e) {
-      LOG.error("Failed to insert user.");
+        repository.save( user );
+
+    } catch ( RepositoryException e ) {
+        LOG.error("Failed to insert user.");
     }
 ```
 
@@ -622,23 +611,23 @@ Even if you are calling another naughty API that throws Exception, at least hide
     // Better.
     //   - The interface leaks details about one specific implementation.
     interface DataStore {
-      String fetchValue(String key) throws SQLException, UnknownHostException;
+      String fetchValue(String key) throws DMLException, AuraException;
     }
 
     // Good.
     //   - A custom exception type insulates the user from the implementation.
     //   - Different implementations aren't forced to abuse irrelevant exception types.
     interface DataStore {
-      String fetchValue(String key) throws StorageException;
+      String fetchValue(String key) throws RepositoryException;
 
-      static class StorageException extends Exception {
+      static class RepositoryException extends Exception {
         ...
       }
     }
 ```
 
-## Writing testable code
 -------------------------
+## Writing testable code
 
 Writing unit tests doesn't have to be hard. You can make it easy for yourself if you keep testability in mind while designing your classes and interfaces.
 
@@ -687,7 +676,7 @@ public class ZipCodeService {
         return transformer.toAddress ( esponsePayload );
     }
 
-    // 4 injection
+    // test injection
     public void setHttpProxy ( HttpProxy proxy ) {
         this.proxy = proxy;
     }
@@ -722,7 +711,7 @@ public class HttpProxyMock extends HttpProxy {
 @isTest
 private class ZipCodeServiceTest {
 
-    // fixture factory for ZipCodeService
+    // fixture factory for ZipCodeService (should be a separated class for it)
     public static ZipCodeService newZipCodeService ( String addressResponse ) {
 
         ZipCodeService service = new ZipCodeService();
@@ -801,8 +790,8 @@ https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_te
 
 ``` java
 /**
- * Class Description (optional)
  *
+ * @description (optional)
  * @author <Name> - <Company>
  */
 ```
