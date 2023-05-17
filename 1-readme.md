@@ -8,7 +8,7 @@ Um dos objetivos deste documento é garantir que a orientação a objetos cumpra
 
 # Padrões de Desenvolvimento Apex
 
-* [Code Style](Code-Style)
-* [Design Patterns](Design-Patterns)
-* [Test Patterns](Test-Patterns)
-* [Code Review](Code-Review)
+* [Design Patterns](2-design-patterns.md)
+* [Test Patterns](3-test-patterns.md)
+* [Code Style](4-code-style.md)
+* [Code Review](5-code-review.md)

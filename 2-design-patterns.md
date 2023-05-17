@@ -89,19 +89,19 @@ public virtual class AccountRepository extends Repository {
 
 Perceba que o Repository também fica responsável por executar os inserts, updates e deletes, operações comuns que são herdadas da classe abstrata Repository.
 
-### Mais informações sobre o pattern Repository:
+#### Mais informações sobre o pattern Repository:
 
-#### Repository pattern
+##### Repository pattern
 Edward Hieatt and Rob Mee. Repository pattern.
 https://martinfowler.com/eaaCatalog/repository.html
 
-#### The Repository pattern
+##### The Repository pattern
 https://learn.microsoft.com/previous-versions/msp-n-p/ff649690(v=pandp.10)
 
-#### Eric Evans. Domain-Driven Design: Tackling Complexity in the Heart of Software. (Book; includes a discussion of the Repository pattern)
+##### Eric Evans. Domain-Driven Design: Tackling Complexity in the Heart of Software. (Book; includes a discussion of the Repository pattern)
 https://www.amazon.com/Domain-Driven-Design-Tackling-Complexity-Software/dp/0321125215/
 
-#### Unit of Work pattern
+##### Unit of Work pattern
 Martin Fowler. Unit of Work pattern.
 https://martinfowler.com/eaaCatalog/unitOfWork.html
 
