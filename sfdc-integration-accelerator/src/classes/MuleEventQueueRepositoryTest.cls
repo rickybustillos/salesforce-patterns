@@ -39,7 +39,7 @@ public class MuleEventQueueRepositoryTest {
 
         MuleEventQueueRepository repository = new MuleEventQueueRepository();
 
-        List<MuleEventQueue__c> storedEventQueues = repository.findPendingByIntegrationName( MuleEventQueueFactory.TEST_INTEGRATION );
+        List<MuleEventQueue__c> storedEventQueues = repository.findPendingByIntegrationName( MuleIntegrationFactory.TEST_INTEGRATION );
 
         Test.stopTest();
 
@@ -51,15 +51,17 @@ public class MuleEventQueueRepositoryTest {
 
         TriggerHandler.bypass('MuleEventQueueHandler');
 
-        MuleEventQueue__c retryableEventQueue = MuleEventQueueFactory.newEventQueue();
+        MuleIntegration__c integration = MuleIntegrationFactory.createMuleIntegration();
+
+        MuleEventQueue__c retryableEventQueue = MuleEventQueueFactory.newMuleEventQueue( integration );
         retryableEventQueue.Status__c = MuleEventQueueStatus.TECHNICAL_ERROR.name();
         retryableEventQueue.ObjectId__c = 'fakeIdRetryable';
 
-        MuleEventQueueFactory.createEventQueue(retryableEventQueue);
+        MuleEventQueueFactory.createMuleEventQueue(retryableEventQueue);
 
         TriggerHandler.clearAllBypasses();
 
-        Set<String> integrationNames = new Set<String>{ retryableEventQueue.EventIntegrationName__c };
+        Set<String> integrationNames = new Set<String>{ integration.Name };
 
         Test.startTest();
 
@@ -77,9 +79,9 @@ public class MuleEventQueueRepositoryTest {
 
         TriggerHandler.bypass('MuleEventQueueHandler');
 
-        MuleEventQueue__c oldRelatedEventQueue = MuleEventQueueFactory.newEventQueue();
+        MuleEventQueue__c oldRelatedEventQueue = MuleEventQueueFactory.newMuleEventQueue();
         oldRelatedEventQueue.ObjectId__c = 'fakeIdOldRelated';
-        MuleEventQueueFactory.createEventQueue(oldRelatedEventQueue);
+        MuleEventQueueFactory.createMuleEventQueue(oldRelatedEventQueue);
 
         oldRelatedEventQueue.Status__c = MuleEventQueueStatus.TECHNICAL_ERROR.name();
         update oldRelatedEventQueue;

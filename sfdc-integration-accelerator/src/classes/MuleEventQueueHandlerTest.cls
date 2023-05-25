@@ -10,7 +10,7 @@ public class MuleEventQueueHandlerTest {
 
         Test.startTest();
 
-        MuleEventQueue__c eventQueue = MuleEventQueueFactory.createEventQueue();
+        MuleEventQueue__c eventQueue = MuleEventQueueFactory.createMuleEventQueue();
 
         Test.stopTest();
 
@@ -22,13 +22,15 @@ public class MuleEventQueueHandlerTest {
     @isTest
     static void itShoulReturnAnErrorWhenCreatingDuplicatedEventQueue() {
 
-        MuleEventQueue__c eventQueue = MuleEventQueueFactory.createEventQueue();
+        MuleIntegration__c integration = MuleIntegrationFactory.createMuleIntegration();
+
+        MuleEventQueue__c eventQueue = MuleEventQueueFactory.createMuleEventQueue( integration );
 
         Test.startTest();
 
         try {
 
-            MuleEventQueue__c newEventQueue = MuleEventQueueFactory.createEventQueue();
+            MuleEventQueue__c newEventQueue = MuleEventQueueFactory.createMuleEventQueue( integration );
 
             System.assert( false, 'There should be an error' );
 
@@ -43,14 +45,16 @@ public class MuleEventQueueHandlerTest {
     @isTest
     static void itShouldCreateAnSchedulableEventQueue() {
 
-        MuleEventQueue__c eventQueue = MuleEventQueueFactory.createEventQueue();
+        MuleIntegration__c integration = MuleIntegrationFactory.createMuleIntegration();
 
-        MuleEventQueue__c newEventQueue = MuleEventQueueFactory.newEventQueue();
+        MuleEventQueue__c eventQueue = MuleEventQueueFactory.createMuleEventQueue( integration );
+
+        MuleEventQueue__c newEventQueue = MuleEventQueueFactory.newMuleEventQueue( integration );
         newEventQueue.ObjectId__c = 'anotherObjectId';
 
         Test.startTest();
 
-        MuleEventQueueFactory.createEventQueue( newEventQueue );
+        MuleEventQueueFactory.createMuleEventQueue( newEventQueue );
 
         Test.stopTest();
 

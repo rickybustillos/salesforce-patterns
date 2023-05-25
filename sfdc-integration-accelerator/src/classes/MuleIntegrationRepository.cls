@@ -4,6 +4,22 @@
  */
 public virtual without sharing class MuleIntegrationRepository {
 
+    public virtual Map<String, MuleIntegration__c> findActives () {
+
+            List<MuleIntegration__c> integrations = [
+                SELECT
+                    Id
+                    , Name
+                    , ClassName__c
+                    , IsActive__c
+                    , IsRetryable__c
+                FROM MuleIntegration__c
+                WHERE IsActive__c = true
+            ];
+
+            return new Map<String, MuleIntegration__c>( integrations );
+    }
+
     /*
      * @description: key is MuleIntegration__c.Name
      */
@@ -11,8 +27,8 @@ public virtual without sharing class MuleIntegrationRepository {
 
         List<MuleIntegration__c> integrations = [
             SELECT
-                ClassName__c
-                , Name
+                Name
+                , ClassName__c
                 , IsActive__c
                 , IsRetryable__c
             FROM MuleIntegration__c

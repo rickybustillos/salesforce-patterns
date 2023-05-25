@@ -17,11 +17,17 @@ public class MuleIntegrationFactory {
         );
     }
 
+    public static MuleIntegration__c newInactiveIntegration () {
+        MuleIntegration__c integration = newMuleIntegration();
+        integration.IsActive__c = false;
+        return integration;
+    }
+
     public static MuleIntegration__c createMuleIntegration () {
         return createMuleIntegration( newMuleIntegration() );
     }
 
-    public static MuleIntegration__c createMuleIntegration (MuleIntegration__c integration) {
+    public static MuleIntegration__c createMuleIntegration ( MuleIntegration__c integration ) {
         insert integration;
         return integration;
     }

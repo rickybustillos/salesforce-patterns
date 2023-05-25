@@ -8,15 +8,13 @@ public class MuleEventQueueFilterTest {
     @isTest
     static void returnEventsWhenFilterByInactiveIntegrations() {
 
-        List<MuleEventQueue__c> eventQueues = new MuleEventQueue__c[]{ MuleEventQueueFactory.newMuleEventQueue() };
-
-        Map<String, EventIntegration__mdt> integrations = EventIntegrationFactory.newIntegrations();
+        List<MuleEventQueue__c> eventQueues = new MuleEventQueue__c[]{ MuleEventQueueFactory.newMuleEventQueue( MuleIntegrationFactory.newInactiveIntegration() ) };
 
         Test.startTest();
 
         MuleEventQueueFilter filter = new MuleEventQueueFilter();
 
-        List<MuleEventQueue__c> filteredMuleEventQueues = filter.byInactiveIntegrations( eventQueues, integrations );
+        List<MuleEventQueue__c> filteredMuleEventQueues = filter.byInactiveIntegrations( eventQueues, new Map<String, MuleIntegration__c>() );
 
         Test.stopTest();
 

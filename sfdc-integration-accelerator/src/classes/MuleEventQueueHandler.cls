@@ -4,6 +4,8 @@
  */
 public with sharing class MuleEventQueueHandler extends TriggerHandler {
 
+    final Map<String, MuleIntegration__c> integrations = new MuleIntegrationRepository().findActives();
+
     List<MuleEventQueue__c> newQueues;
     Map<Id, MuleEventQueue__c> oldQueuesById;
 
@@ -45,11 +47,13 @@ public with sharing class MuleEventQueueHandler extends TriggerHandler {
 
         if ( duplicityValidableMuleEventQueues.isEmpty() ) return;
 
-        List<String> ignoredIds = Lists.byField(this.newQueues, 'Id');
+        List<String> newQueuesObjectsIds = Lists.byField( this.newQueues, 'ObjectId__c' );
+
+        List<String> newQueuesIdsToIgnore = Lists.byField( this.newQueues, 'Id' );
 
         List<MuleEventQueue__c> duplicatedPendingMuleEventQueues = this.repository.findPendingByObjectIds(
-            Lists.byField( this.newQueues, 'ObjectId__c' ),
-            ignoredIds
+            newQueuesObjectsIds,
+            newQueuesIdsToIgnore
         );
 
         List<String> existentPendingObjectsIds = Lists.byField( duplicatedPendingMuleEventQueues, 'ObjectId__c');
@@ -59,7 +63,7 @@ public with sharing class MuleEventQueueHandler extends TriggerHandler {
 
     private void cancelInactiveIntegrations () {
 
-        List<MuleEventQueue__c> queuesToCancel = this.filter.byInactiveIntegrations( this.newQueues );
+        List<MuleEventQueue__c> queuesToCancel = this.filter.byInactiveIntegrations( this.newQueues, this.integrations );
 
         this.enricher.cancel( queuesToCancel );
     }

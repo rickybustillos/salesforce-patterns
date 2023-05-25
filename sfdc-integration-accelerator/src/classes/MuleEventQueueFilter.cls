@@ -4,18 +4,18 @@
  */
 public without sharing class MuleEventQueueFilter {
 
-    public List<MuleEventQueue__c> byInactiveIntegrations ( List<MuleEventQueue__c> eventQueues ) {
+    public List<MuleEventQueue__c> byInactiveIntegrations ( List<MuleEventQueue__c> eventQueues, Map<String, MuleIntegration__c> activeIntegrationsById ) {
 
-        List<MuleEventQueue__c> inactiveMuleEventQueues = new List<MuleEventQueue__c>();
+        List<MuleEventQueue__c> eventQueuesToCancel = new List<MuleEventQueue__c>();
 
         for ( MuleEventQueue__c eventQueue : eventQueues ) {
 
-            if ( eventQueue?.MuleIntegration__c?.IsActive__c == null ) continue;
+            if ( activeIntegrationsById.containsKey( eventQueue.MuleIntegration__c ) ) continue;
 
-            inactiveMuleEventQueues.add( eventQueue );
+            eventQueuesToCancel.add( eventQueue );
         }
 
-        return inactiveMuleEventQueues;
+        return eventQueuesToCancel;
     }
 
     public List<MuleEventQueue__c> byDuplicityValidables ( List<MuleEventQueue__c> newMuleEventQueues, Map<Id, MuleEventQueue__c> oldMuleEventQueuesById ) {
@@ -24,7 +24,7 @@ public without sharing class MuleEventQueueFilter {
 
         List<MuleEventQueue__c> validableMuleEventQueues = new List<MuleEventQueue__c>();
 
-        for ( MuleEventQueue__c newMuleEventQueue : newEventqueues ) {
+        for ( MuleEventQueue__c newMuleEventQueue : newMuleEventQueues ) {
 
             if ( this.isDuplicityValidable( newMuleEventQueue, oldMuleEventQueuesById.get( newMuleEventQueue.Id ) ) ) {
 

@@ -84,7 +84,9 @@ public class MapsTest {
     @isTest
     static void itShouldReturnMetadataIndexedMapByField () {
 
-        List<MuleIntegration__c> integrations = MuleIntegrationFactory.newMuleIntegration();
+        List<MuleIntegration__c> integrations = new List<MuleIntegration__c>{
+            MuleIntegrationFactory.newMuleIntegration()
+        };
 
         Test.startTest();
 

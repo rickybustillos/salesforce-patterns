@@ -2,49 +2,49 @@
  * @description: Class to enrich Mule Event Queues with information. Generally used in a trigger transaction.
  * @author: Henrique Bustillos - Everymind
  */
-public without sharing class EventQueueEnricher {
+public without sharing class MuleEventQueueEnricher {
 
     MuleEventQueueRepository repository;
 
-    public EventQueueEnricher() {
+    public MuleEventQueueEnricher() {
         this.repository = new MuleEventQueueRepository();
     }
 
-    public List<EventQueue__c> cancel ( List<EventQueue__c> eventQueues ) {
+    public List<MuleEventQueue__c> cancel ( List<MuleEventQueue__c> eventQueues ) {
 
-        for ( EventQueue__c eventQueue : eventQueues ) {
+        for ( MuleEventQueue__c eventQueue : eventQueues ) {
             this.cancel( eventQueue );
         }
 
         return eventQueues;
     }
 
-    public EventQueue__c cancel ( EventQueue__c eventQueue ) {
+    public MuleEventQueue__c cancel ( MuleEventQueue__c eventQueue ) {
 
-        eventQueue.Status__c = EventQueueStatus.CANCELED.name();
+        eventQueue.Status__c = MuleEventQueueStatus.CANCELED.name();
 
         return eventQueue;
     }
 
-    public EventQueue__c blockRetry ( EventQueue__c eventQueue ) {
+    public MuleEventQueue__c blockRetry ( MuleEventQueue__c eventQueue ) {
 
         eventQueue.IsRetryBlocked__c = true;
 
         return eventQueue;
     }
 
-    public List<EventQueue__c> blockRetries ( List<EventQueue__c> oldRelatedEventQueues ) {
+    public List<MuleEventQueue__c> blockRetries ( List<MuleEventQueue__c> oldRelatedEventQueues ) {
 
-        for ( EventQueue__c oldRelatedEventQueue : oldRelatedEventQueues ) {
+        for ( MuleEventQueue__c oldRelatedEventQueue : oldRelatedEventQueues ) {
             this.blockRetry( oldRelatedEventQueue );
         }
 
         return this.repository.save( oldRelatedEventQueues );
     }
 
-    public List<EventQueue__c> incrementRetryCount ( List<EventQueue__c> newEventQueues ) {
+    public List<MuleEventQueue__c> incrementRetryCount ( List<MuleEventQueue__c> newEventQueues ) {
 
-        for( EventQueue__c eventQueue : newEventQueues ) {
+        for( MuleEventQueue__c eventQueue : newEventQueues ) {
 
             eventQueue.RetryCount__c += 1;
 
