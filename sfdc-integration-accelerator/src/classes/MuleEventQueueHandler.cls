@@ -1,22 +1,25 @@
 /**
- * @description: This is an exclusive class to process and delegate operations to triggered MuleEventQueue__c records.
+ * @description: This is an exclusive class to process triggered MuleEventQueue__c records.
  * @author: Henrique Bustillos - Everymind
  */
 public with sharing class MuleEventQueueHandler extends TriggerHandler {
 
-    final Map<String, MuleIntegration__c> integrations = new MuleIntegrationRepository().findActives();
+    static final Map<String, MuleIntegration__mdt> MULE_INTEGRATIONS = MuleIntegration__mdt.getAll();
 
-    List<MuleEventQueue__c> newQueues;
-    Map<Id, MuleEventQueue__c> oldQueuesById;
+    private List<MuleEventQueue__c> newEventQueues;
+    private Map<Id, MuleEventQueue__c> oldEventQueuesById;
 
-    MuleEventQueueRepository repository;
-    MuleEventQueueValidator validate;
-    MuleEventQueueEnricher enricher;
-    MuleEventQueueFilter filter;
+    private MuleEventQueueRepository repository;
+
+    private MuleEventQueueValidator validate;
+
+    private MuleEventQueueEnricher enricher;
+
+    private MuleEventQueueFilter filter;
 
     public MuleEventQueueHandler() {
-        this.newQueues = (List<MuleEventQueue__c>) Trigger.new;
-        this.oldQueuesById = (Map<Id, MuleEventQueue__c>) Trigger.oldMap;
+        this.newEventQueues = (List<MuleEventQueue__c>) Trigger.new;
+        this.oldEventQueuesById = (Map<Id, MuleEventQueue__c>) Trigger.oldMap;
         this.repository = new MuleEventQueueRepository();
         this.validate = new MuleEventQueueValidator();
         this.enricher = new MuleEventQueueEnricher();
@@ -24,11 +27,13 @@ public with sharing class MuleEventQueueHandler extends TriggerHandler {
     }
 
     public override void beforeInsert () {
+        this.setPendingStatus();
         this.validateDuplicatedPending();
         this.cancelInactiveIntegrations();
     }
 
     public override void beforeUpdate () {
+        this.setPendingStatus();
         this.validateDuplicatedPending();
         this.incrementRetryCount();
     }
@@ -41,49 +46,54 @@ public with sharing class MuleEventQueueHandler extends TriggerHandler {
         this.blockOldRelated();
     }
 
-    private void validateDuplicatedPending () {
+    private void setPendingStatus() {
 
-        List<MuleEventQueue__c> duplicityValidableMuleEventQueues = this.filter.byDuplicityValidables( this.newQueues, this.oldQueuesById );
+        List<MuleEventQueue__c> newPendingEventQueues = this.filter.byEmptyStatus( this.newEventQueues );
 
-        if ( duplicityValidableMuleEventQueues.isEmpty() ) return;
-
-        List<String> newQueuesObjectsIds = Lists.byField( this.newQueues, 'ObjectId__c' );
-
-        List<String> newQueuesIdsToIgnore = Lists.byField( this.newQueues, 'Id' );
-
-        List<MuleEventQueue__c> duplicatedPendingMuleEventQueues = this.repository.findPendingByObjectIds(
-            newQueuesObjectsIds,
-            newQueuesIdsToIgnore
-        );
-
-        List<String> existentPendingObjectsIds = Lists.byField( duplicatedPendingMuleEventQueues, 'ObjectId__c');
-
-        this.validate.withNotDuplicatedObjectId( duplicityValidableMuleEventQueues, existentPendingObjectsIds );
+        this.enricher.withPendingStatus( newPendingEventQueues );
     }
 
-    private void cancelInactiveIntegrations () {
+    private void validateDuplicatedPending() {
 
-        List<MuleEventQueue__c> queuesToCancel = this.filter.byInactiveIntegrations( this.newQueues, this.integrations );
+        List<String> ignoredIds = Lists.byField(this.newEventQueues, 'Id');
+
+        List<MuleEventQueue__c> duplicityValidableEventQueues = this.filter.byDuplicityValidables( this.newEventQueues, this.oldEventQueuesById );
+
+        if (duplicityValidableEventQueues.isEmpty()) return;
+
+        List<MuleEventQueue__c> existentPendingEventQueues = this.repository.findPendingByRecordsIds(
+            Lists.byField( this.newEventQueues, 'RecordId__c' ),
+            ignoredIds
+        );
+
+        List<String> existentPendingObjectsIds = Lists.byField( existentPendingEventQueues, 'RecordId__c');
+
+        this.validate.withNotDuplicatedObjectId( duplicityValidableEventQueues, existentPendingObjectsIds );
+    }
+
+    private void cancelInactiveIntegrations() {
+
+        List<MuleEventQueue__c> queuesToCancel = this.filter.byInactiveIntegrations( this.newEventQueues, MULE_INTEGRATIONS );
 
         this.enricher.cancel( queuesToCancel );
     }
 
-    private void incrementRetryCount () {
+    private void incrementRetryCount() {
 
-        List<MuleEventQueue__c> retryedMuleEventQueues = this.filter.byRetryedMuleEventQueues( this.newQueues, this.oldQueuesById );
+        List<MuleEventQueue__c> retryedEventQueues = this.filter.byRetryedEventQueues( this.newEventQueues, this.oldEventQueuesById );
 
-        this.enricher.incrementRetryCount( retryedMuleEventQueues );
+        this.enricher.incrementRetryCount( retryedEventQueues );
     }
 
-    private void blockOldRelated () {
+    private void blockOldRelated() {
 
-        List<MuleEventQueue__c> newPendingMuleEventQueues = this.filter.byPendingMuleEventQueues( this.newQueues );
+        List<MuleEventQueue__c> newPendingEventQueues = this.filter.byPendingEventQueues( this.newEventQueues );
 
-        List<MuleEventQueue__c> oldRelatedMuleEventQueues = this.repository.findOldRelated(
-            Lists.byField( newPendingMuleEventQueues, 'ObjectId__c' ),
-            Lists.byField( newPendingMuleEventQueues, 'Id' )
+        List<MuleEventQueue__c> oldRelatedEventQueues = this.repository.findOldRelated(
+            Lists.byField( newPendingEventQueues, 'RecordId__c' ),
+            Lists.byField( newPendingEventQueues, 'Id' )
         );
 
-        this.enricher.blockRetries(oldRelatedMuleEventQueues);
+        this.enricher.blockRetries(oldRelatedEventQueues);
     }
 }

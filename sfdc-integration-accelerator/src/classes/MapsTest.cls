@@ -82,9 +82,38 @@ public class MapsTest {
     }
 
     @isTest
+    static void itShouldReturnUntypedGroupedMap () {
+
+        List<Account> accounts = MapsTest.setup();
+
+        Test.startTest();
+
+        Map<String, List<Account>> accountsGroupedByBillingState = (Map<String, List<Account>>) Maps.groupBy( 'BillingState', accounts, Account.class );
+
+        Test.stopTest();
+
+        System.assertEquals( 2, accountsGroupedByBillingState.size(), 'Grouped Accounts size should be 2' );
+        System.assertEquals( 2, accountsGroupedByBillingState.get('São Paulo').size(), 'Grouped Accounts size should be 2' );
+    }
+
+    @isTest
+    static void itShouldReturnEmptyUntypedGroupedMap () {
+
+        List<Account> accounts = new List<Account>();
+
+        Test.startTest();
+
+        Map<String, List<Account>> accountsGroupedByBillingState = (Map<String, List<Account>>) Maps.groupBy( 'BillingState', accounts, Account.class );
+
+        Test.stopTest();
+
+        System.assert( accountsGroupedByBillingState.isEmpty(), 'Grouped Accounts should be empty' );
+    }
+
+    @isTest
     static void itShouldReturnMetadataIndexedMapByField () {
 
-        List<MuleIntegration__c> integrations = new List<MuleIntegration__c>{
+        List<MuleIntegration__mdt> integrations = new List<MuleIntegration__mdt>{
             MuleIntegrationFactory.newMuleIntegration()
         };
 
@@ -92,7 +121,7 @@ public class MapsTest {
 
         Map<String, Object> eventIntegrationsByClassName = Maps.indexByFieldAndValue(
             integrations
-            , 'ClassName__c'
+            , 'ApexClassName__c'
             , 'IsRetryable__c'
             , true
         );
@@ -120,5 +149,48 @@ public class MapsTest {
 
         System.assert( accountsByName.containsKey('Account 1'), 'Indexed map should contains the key' );
         System.assert( accountsByName.containsKey('Account 2'), 'Indexed map should contains the key' );
+    }
+
+    @isTest
+    static void returnGroupedMapByLookup () {
+
+        List<Account> accounts = MapsTest.setup();
+
+        Test.startTest();
+
+        Map<String, List<Account>> accountsByParentName = (Map<String, List<Account>>) Maps.groupByLookupField( 'Parent', 'Name', accounts );
+
+        Test.stopTest();
+
+        System.assertEquals( 2, accountsByParentName.size(), 'Grouped Accounts size should be 2' );
+        System.assertEquals( 1, accountsByParentName.get('ParentAccount 1').size(), 'Grouped Accounts size should be 1' );
+    }
+
+    @isTest
+    static void returnEmptyWhenGroupByLookup () {
+
+        List<Account> accounts = new List<Account>();
+
+        Test.startTest();
+
+        Map<String, List<Account>> accountsByParentName = (Map<String, List<Account>>) Maps.groupByLookupField( 'Parent', 'Name', accounts );
+
+        Test.stopTest();
+
+        Assert.isTrue( accountsByParentName.isEmpty(), 'Grouped Accounts size should be empty' );
+    }
+
+    @isTest
+    static void returnEmptyWhenGroupMapByLookupFieldNotFound () {
+
+        List<Account> accounts = MapsTest.setup();
+
+        Test.startTest();
+
+        Map<String, List<Account>> accountsByParentName = (Map<String, List<Account>>) Maps.groupByLookupField( 'Parent', 'NumberOfEmployees', accounts );
+
+        Test.stopTest();
+
+        Assert.isTrue( accountsByParentName.isEmpty(), 'Grouped Accounts size should be empty' );
     }
 }

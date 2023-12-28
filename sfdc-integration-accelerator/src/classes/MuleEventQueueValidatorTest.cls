@@ -8,25 +8,25 @@ public class MuleEventQueueValidatorTest {
     @isTest
     static void scenarioWithExistentPendingObjectId() {
 
-        List<MuleEventQueue__c> eventQueues = new List<MuleEventQueue__c>{ MuleEventQueueFactory.newMuleEventQueue() };
+        List<MuleEventQueue__c> muleEventQueues = new List<MuleEventQueue__c>{ MuleEventQueueFactory.newMuleEventQueue() };
 
-        List<String> exitentObjectsIds = new List<String>{ eventQueues.get(0).ObjectId__c };
+        List<String> exitentObjectsIds = new List<String>{ muleEventQueues.get(0).RecordId__c };
 
         Test.startTest();
 
         MuleEventQueueValidator validator = new MuleEventQueueValidator();
 
-        validator.withNotDuplicatedObjectId( eventQueues , exitentObjectsIds );
+        validator.withNotDuplicatedObjectId( muleEventQueues , exitentObjectsIds );
 
         Test.stopTest();
 
-        System.assert( eventQueues.get(0).hasErrors(), 'MuleEventQueue should have error' );
+        System.assert( muleEventQueues.get(0).hasErrors(), 'EventQueue should have error' );
     }
 
     @isTest
     static void scenarioWithDuplicatedInSameContext() {
 
-        List<MuleEventQueue__c> eventQueues = new List<MuleEventQueue__c>{
+        List<MuleEventQueue__c> muleEventQueues = new List<MuleEventQueue__c>{
             MuleEventQueueFactory.newMuleEventQueue(),
             MuleEventQueueFactory.newMuleEventQueue()
         };
@@ -35,10 +35,10 @@ public class MuleEventQueueValidatorTest {
 
         MuleEventQueueValidator validator = new MuleEventQueueValidator();
 
-        validator.withNotDuplicatedObjectId( eventQueues , new List<String>() );
+        validator.withNotDuplicatedObjectId( muleEventQueues , new List<String>() );
 
         Test.stopTest();
 
-        System.assert( eventQueues.get(1).hasErrors(), 'MuleEventQueue should have error' );
+        System.assert( muleEventQueues.get(1).hasErrors(), 'EventQueue should have error' );
     }
 }

@@ -264,7 +264,5 @@ private class TriggerHandlerTest {
         public override void afterUndelete() {
             TriggerHandlerTest.lastMethodCalled = 'afterUndelete';
         }
-
     }
-
 }

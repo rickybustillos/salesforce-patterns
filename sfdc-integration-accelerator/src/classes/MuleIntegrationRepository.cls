@@ -1,43 +1,43 @@
 /**
- * @description: Class to provide MuleIntegration__c custom metadatas
+ * @description: Class to provide MuleIntegration__mdt custom metadatas
  * @author: Henrique Bustillos - Everymind
  */
 public virtual without sharing class MuleIntegrationRepository {
 
-    public virtual Map<String, MuleIntegration__c> findActives () {
-
-            List<MuleIntegration__c> integrations = [
-                SELECT
-                    Id
-                    , Name
-                    , ClassName__c
-                    , IsActive__c
-                    , IsRetryable__c
-                FROM MuleIntegration__c
-                WHERE IsActive__c = true
-            ];
-
-            return new Map<String, MuleIntegration__c>( integrations );
-    }
-
-    /*
-     * @description: key is MuleIntegration__c.Name
+    /**
+     * @description: find all active retryable integrations indexed by DeveloperName
      */
-    public virtual Map<String, MuleIntegration__c> findActiveRetryable () {
+    public virtual Map<String, MuleIntegration__mdt> findActiveRetryable () {
 
-        List<MuleIntegration__c> integrations = [
+        List<MuleIntegration__mdt> integrations = [
             SELECT
-                Name
-                , ClassName__c
+                ApexClassName__c
+                , DeveloperName
                 , IsActive__c
                 , IsRetryable__c
-            FROM MuleIntegration__c
+            FROM MuleIntegration__mdt
             WHERE IsRetryable__c = true
             AND IsActive__c = true
         ];
 
-        Map<String, MuleIntegration__c> integrationsByName = (Map<String, MuleIntegration__c>) Maps.indexBy('Name', integrations);
+        if ( !integrations.isEmpty() ) return (Map<String, MuleIntegration__mdt>) Maps.indexBy('DeveloperName', integrations);
 
-        return integrationsByName;
+        return new Map<String, MuleIntegration__mdt>();
+    }
+
+    public virtual MuleIntegration__mdt findByIntegrationName ( MuleIntegrationType integrationType ) {
+
+        List<MuleIntegration__mdt> integrations = [
+            SELECT
+                ApexClassName__c
+                , DeveloperName
+                , IsActive__c
+                , IsRetryable__c
+                , (SELECT Id, Fields__c, SObjectType__c, DeveloperName FROM MuleIntegrationObjects__r)
+            FROM MuleIntegration__mdt
+            WHERE DeveloperName = :integrationType.name()
+        ];
+
+        return integrations.isEmpty() ? null : integrations[0];
     }
 }

@@ -5,34 +5,33 @@
 @isTest
 public class MuleEventQueueFactory {
 
-    public static MuleEventQueue__c newMuleEventQueue () {
+    public static final String TEST_INTEGRATION = 'TEST_INTEGRATION';
+
+    public static MuleEventQueue__c newMuleEventQueue( String recordId ) {
         return new MuleEventQueue__c (
-            IsRetryBlocked__c = false
+            Status__c = MuleEventQueueStatus.PENDING.name()
+            , MuleIntegrationName__c = TEST_INTEGRATION
+            , RecordId__c = recordId
             , RetryCount__c = 0
-            , Status__c = MuleEventQueueStatus.PENDING.name()
-            , ObjectId__c = 'fakeId'
+            , IsRetryBlocked__c = false
         );
     }
 
-    public static MuleEventQueue__c newMuleEventQueue ( MuleIntegration__c integration ) {
-
-        MuleEventQueue__c eventQueue = newMuleEventQueue();
-        eventQueue.MuleIntegration__c = integration.Id;
-
-        return eventQueue;
+    public static MuleEventQueue__c newMuleEventQueue() {
+        return newMuleEventQueue( 'fakeId' );
     }
 
-    public static MuleEventQueue__c createMuleEventQueue ( MuleIntegration__c integration ) {
-        return createMuleEventQueue( newMuleEventQueue( integration ) );
+    public static MuleEventQueue__c createMuleEventQueue( String recordId ) {
+        return createMuleEventQueue( newMuleEventQueue( recordId ) );
     }
 
-    public static MuleEventQueue__c createMuleEventQueue () {
-        return createMuleEventQueue( newMuleEventQueue( MuleIntegrationFactory.createMuleIntegration() ) );
+    public static MuleEventQueue__c createMuleEventQueue() {
+        return createMuleEventQueue( newMuleEventQueue() );
     }
 
-    public static MuleEventQueue__c createMuleEventQueue (MuleEventQueue__c eventQueue) {
-        insert eventQueue;
-        return eventQueue;
+    public static MuleEventQueue__c createMuleEventQueue( MuleEventQueue__c muleEventQueue ) {
+        insert muleEventQueue;
+        return muleEventQueue;
     }
 
     public static MuleEventQueue__c fromJson ( String payload ) {

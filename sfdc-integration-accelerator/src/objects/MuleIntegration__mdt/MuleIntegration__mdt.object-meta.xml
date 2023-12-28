@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>All known integrations and it&apos;s configurations with MuleSoft will be registered in this custom metadata.</description>
+    <label>Mule Integration</label>
+    <pluralLabel>Mule Integrations</pluralLabel>
+    <visibility>Public</visibility>
+</CustomObject>

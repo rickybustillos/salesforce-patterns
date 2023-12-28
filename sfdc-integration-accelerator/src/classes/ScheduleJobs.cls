@@ -1,7 +1,5 @@
 /**
  * @description: This utility class is used to schedule jobs.
- * @usage: Create a new instance of this class and call the methods you need.
- * @tip: Apex Jobs are constructed with this syntax: Seconds Minutes Hours Day_of_month Month Day_of_week Optional_year
  * @author: Henrique Bustillos - Everymind
  */
 public class ScheduleJobs {
@@ -28,16 +26,19 @@ public class ScheduleJobs {
         }
     }
 
-    /*
-     * @description: Start the job with a specific day of the week and hour
-     * @param dayOfWeek: String with the day of the week (MON, TUE, WED, THU, FRI, SAT, SUN)
-     * @param hour: Integer with the hour of the day (0-23)
-     */
-    public void weekly ( Schedulable service, DayOfWeek dayOfWeek, Integer hour ) {
+    public void intoNextMinutes ( Schedulable service, Integer minutes ) {
 
-        String cronExpression = '0 0 ' + hour + ' ? * ' + dayOfWeek.name();
+        String baseExpression = ' * * ?';
 
-        schedule ( service, cronExpression );
+        Datetime nextScheduleTime = System.now().addMinutes(minutes);
+
+        String cron = '0 ' + nextScheduleTime.minute() + ' ' + nextScheduleTime.hour() + baseExpression;
+
+        this.forExpression( service, cron );
+    }
+
+    public void forExpression ( Schedulable service, String expression ) {
+        System.schedule( getServiceName (service) + '  ' + jobCountForTest + expression, expression, service );
     }
 
     public void abort ( String jobName ) {

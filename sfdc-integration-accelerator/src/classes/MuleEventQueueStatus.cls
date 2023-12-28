@@ -1,5 +1,5 @@
 /**
- * @description: All Event Queue possible Status from Picklist
+ * @description: All Mule Event Queue possible Status from Picklist
  * @author: Henrique Bustillos - Everymind
  */
 public enum MuleEventQueueStatus {

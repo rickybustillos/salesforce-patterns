@@ -21,7 +21,7 @@ public class ScheduleJobsTest {
 
         Test.stopTest();
 
-        System.assertEquals( 2, (Integer) scheduledJobs.get(0).get('total'), '2 jobs should be created' );
+        Assert.areEqual( 2, (Integer) scheduledJobs.get(0).get('total'), '2 jobs should be created' );
     }
 
 
@@ -37,7 +37,7 @@ public class ScheduleJobsTest {
 
         List<AggregateResult> scheduledJobs = findCronJob( jobName );
 
-        System.assertEquals( 2, (Integer) scheduledJobs.get(0).get('total'), '2 jobs should be created' );
+        Assert.areEqual( 2, (Integer) scheduledJobs.get(0).get('total'), '2 jobs should be created' );
 
         Test.startTest();
 
@@ -47,30 +47,30 @@ public class ScheduleJobsTest {
 
         scheduledJobs = findCronJob( jobName );
 
-        System.assertEquals( 0, (Integer) scheduledJobs.get(0).get('total'), 'No jobs should be found' );
+        Assert.areEqual( 0, (Integer) scheduledJobs.get(0).get('total'), 'No jobs should be found' );
     }
 
     @isTest
-    public static void weeklyJobCreation  () {
+    public static void scheduleJobToExecuteInNextMinute  () {
 
         ScheduleJobs schedule = new ScheduleJobs ();
-        ScheduleJobs.jobCountForTest = 200;
+        ScheduleJobs.jobCountForTest = 110;
 
-        String jobName = '%JobTest  '+ ScheduleJobs.jobCountForTest +'%';
+        String jobName = '%Test  '+ ScheduleJobs.jobCountForTest +'%';
 
         Test.startTest();
 
-        schedule.weekly( new JobTest(), DayOfWeek.WED, 10 );
-
-        Test.stopTest();
+        schedule.intoNextMinutes( new JobTest() , 2);
 
         List<AggregateResult> results = findCronJob(jobName);
 
-        System.assertEquals(1, (Integer) results.get(0).get('total'), '' );
+        Assert.areEqual(1, (Integer) results.get(0).get('total'), '1 job should be created' );
+
+        Test.stopTest();
     }
 
     private static List<AggregateResult> findCronJob (String jobName) {
-        return [ SELECT count(Id) total from CronTrigger Where CronJobDetail.Name like :jobName ];
+        return [ SELECT count(Id) total FROM CronTrigger WHERE CronJobDetail.Name LIKE :jobName ];
     }
 
     public class JobTest implements Schedulable {

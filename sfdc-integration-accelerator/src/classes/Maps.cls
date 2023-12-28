@@ -4,7 +4,7 @@
  */
 public without sharing class Maps {
 
-    public static Map<String, SObject> indexBy ( String fieldName, List<SObject> records ) {
+    public static Map<String, SObject> indexBy( String fieldName, List<SObject> records ) {
 
         if ( Lists.isEmpty(records) ) return new Map<String, SObject>();
 
@@ -22,7 +22,7 @@ public without sharing class Maps {
         return values;
     }
 
-    public static Map<String, Decimal> indexFieldBy ( String fieldName, String fieldName2, List<SObject> records) {
+    public static Map<String, Decimal> indexFieldBy( String fieldName, String fieldName2, List<SObject> records ) {
 
         if ( Lists.isEmpty(records) ) return new Map<String, Decimal>();
 
@@ -40,10 +40,7 @@ public without sharing class Maps {
         return values;
     }
 
-    /*
-     * @description: Works with SObjects and Custom Metadatas objects
-    */
-    public static Map<String, Object> indexByFieldAndValue ( List<Object> records, String indexedField, String field, Object value ) {
+    public static Map<String, Object> indexByFieldAndValue( List<Object> records, String indexedField, String field, Object value ) {
 
         if ( Lists.isEmpty(records) ) return null;
 
@@ -63,7 +60,7 @@ public without sharing class Maps {
         return recordsByField;
     }
 
-    public static Map<String, List<SObject>> groupBy ( String fieldName, List<SObject> records ) {
+    public static Map<String, List<SObject>> groupBy( String fieldName, List<SObject> records ) {
 
         if ( Lists.isEmpty(records) ) return new Map<String, List<SObject>>();
 
@@ -85,7 +82,65 @@ public without sharing class Maps {
         return values;
     }
 
-    private static Map<String, List<SObject>> newEmptyGroupedMap ( List<SObject> records ) {
+    public static Map<String, List<Object>> groupBy( String fieldName, List<Object> records, Type objectType ) {
+
+        if ( Lists.isEmpty(records) ) return new Map<String, List<SObject>>();
+
+        Map<String, List<Object>> values = newEmptyGroupedMap(records, objectType);
+
+        for ( Object record : records ) {
+
+            CObject coreRecord = new CObject(record);
+
+            if ( !coreRecord.containsKey( fieldName ) ) continue;
+
+            String value = (String) coreRecord.get( fieldName );
+
+            if ( value == null ) continue;
+
+            if ( !values.containsKey( value ) ) {
+                values.put( value, newEmptyList( objectType ) );
+            }
+
+            values.get( value ).add( record );
+        }
+
+        return values;
+    }
+
+    public static Map<String, List<SObject>> groupByLookupField( String lookup, String lookupFieldName, List<SObject> records ) {
+
+        if ( Lists.isEmpty(records) ) {
+            return new Map<String, List<SObject>>();
+        }
+
+        Map<String, List<SObject>> values = newEmptyGroupedMap(records);
+
+        for ( SObject record : records ) {
+
+            SObject lookupRecord = record.getSObject( lookup );
+
+            if ( lookupRecord == null ) {
+                continue;
+            }
+
+            String value = (String) lookupRecord.get( lookupFieldName );
+
+            if ( value == null ) {
+                continue;
+            }
+
+            if ( !values.containsKey( value ) ) {
+                values.put( value, new List<SObject>() );
+            }
+
+            values.get( value ).add( record );
+        }
+
+        return values;
+    }
+
+    private static Map<String, List<SObject>> newEmptyGroupedMap( List<SObject> records ) {
 
         if ( Lists.isEmpty(records) ) return null;
 
@@ -98,7 +153,16 @@ public without sharing class Maps {
         return (Map<String, List<SObject>>) sobjectType.newInstance();
     }
 
-    private static Map<String, SObject> newEmptyMap (List<SObject> records) {
+    private static Map<String, List<Object>> newEmptyGroupedMap( List<Object> records, Type objectType ) {
+
+        if ( Lists.isEmpty(records) ) return null;
+
+        Type groupedObjectType = Type.forName( 'Map<String, List<' + objectType + '>>' );
+
+        return (Map<String, List<Object>>) groupedObjectType.newInstance();
+    }
+
+    private static Map<String, SObject> newEmptyMap( List<SObject> records ) {
 
         if ( Lists.isEmpty(records) ) return null;
 
@@ -109,5 +173,12 @@ public without sharing class Maps {
         Type sobjectType = Type.forName( 'Map<String, ' + sobjectName + '>' );
 
         return (Map<String, SObject>) sobjectType.newInstance();
+    }
+
+    private static List<Object> newEmptyList( Type objectType ) {
+
+        Type listType = Type.forName( 'List<' + objectType + '>' );
+
+        return (List<Object>) listType.newInstance();
     }
 }

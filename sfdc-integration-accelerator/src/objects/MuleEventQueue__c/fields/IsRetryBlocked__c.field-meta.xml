@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>IsRetryBlocked__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>If this event was retryed the limit number of retries or if another event was created for the same record this field will be checked automatically by the framework</description>
+    <externalId>false</externalId>
+    <label>IsRetryBlocked</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

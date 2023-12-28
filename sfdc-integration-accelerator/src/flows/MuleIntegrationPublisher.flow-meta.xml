@@ -1,0 +1,261 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>57.0</apiVersion>
+    <assignments>
+        <description>Adicionar EventQueue à coleção</description>
+        <name>AddEventQueueToCollection</name>
+        <label>Adicionar EventQueue à coleção</label>
+        <locationX>440</locationX>
+        <locationY>1190</locationY>
+        <assignmentItems>
+            <assignToReference>eventQueuesToCreate</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>eventQueueToCreate</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>RecordId</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Instanciar EventQueue a ser criada</description>
+        <name>EventQueueInstace</name>
+        <label>Instância da EventQueue</label>
+        <locationX>440</locationX>
+        <locationY>1070</locationY>
+        <assignmentItems>
+            <assignToReference>eventQueueToCreate.RecordId__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>RecordId</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>eventQueueToCreate.Status__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <stringValue>PENDING</stringValue>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>eventQueueToCreate.MuleIntegrationName__c</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>integrationName</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>AddEventQueueToCollection</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <description>Ignorar este Id devido já existir uma EventQueue pendente atrelada a esse Id de registro para evitar duplicidade de Eventos atrelados ao mesmo objeto.</description>
+        <name>recordIdToIgnore</name>
+        <label>Record Id com EventQueue existente</label>
+        <locationX>264</locationX>
+        <locationY>518</locationY>
+        <assignmentItems>
+            <assignToReference>recordsIdsToIgnore</assignToReference>
+            <operator>Add</operator>
+            <value>
+                <elementReference>ExistentEventQueues.RecordId__c</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>ExistentEventQueues</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description>Verificar se o Id em questão foi ignorado anteriormente</description>
+        <name>IsRecordIdIgnored</name>
+        <label>Id ignorado?</label>
+        <locationX>352</locationX>
+        <locationY>950</locationY>
+        <defaultConnector>
+            <targetReference>EventQueueInstace</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Não</defaultConnectorLabel>
+        <rules>
+            <name>IgnoredRecordId</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>recordsIdsToIgnore</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>RecordId</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>RecordId</targetReference>
+            </connector>
+            <label>Sim</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description>Verificar se o RecordId__c do EventQueue iterado contém na lista de Ids recebidos no Flow</description>
+        <name>RecordIdShouldBeIgnored</name>
+        <label>Id deve ser ignorado?</label>
+        <locationX>396</locationX>
+        <locationY>398</locationY>
+        <defaultConnector>
+            <targetReference>ExistentEventQueues</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Não</defaultConnectorLabel>
+        <rules>
+            <name>RecordIdToBeIgnored</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>recordsIds</leftValueReference>
+                <operator>Contains</operator>
+                <rightValue>
+                    <elementReference>ExistentEventQueues.RecordId__c</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>recordIdToIgnore</targetReference>
+            </connector>
+            <label>Sim</label>
+        </rules>
+    </decisions>
+    <description>Publicador do objeto EventQueue que é responsável por publicar de fato o Evento de Plataforma de acordo com as configurações setadas no metadado EventIntegration__mdt. Este Flow é chamado por outros Flows de Gatilho nos objetos e recebe por parâmetro uma Lista de Ids e o nome da integração.</description>
+    <environments>Default</environments>
+    <interviewLabel>MuleIntegrationPublisher {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>MuleIntegrationPublisher</label>
+    <loops>
+        <description>Percorrer todas as EventQueues existentes</description>
+        <name>ExistentEventQueues</name>
+        <label>EventQueues existentes</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <collectionReference>RelatedPendingEventQueues</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>RecordIdShouldBeIgnored</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>RecordId</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <loops>
+        <description>Instanciar EventQueues a serem criadas posteriormente ignorando os Ids que já possuem EventQueue pendente</description>
+        <name>RecordId</name>
+        <label>Para cada Record Id</label>
+        <locationX>176</locationX>
+        <locationY>830</locationY>
+        <collectionReference>recordsIds</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>IsRecordIdIgnored</targetReference>
+        </nextValueConnector>
+        <noMoreValuesConnector>
+            <targetReference>CreateEventQueues</targetReference>
+        </noMoreValuesConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordCreates>
+        <description>Criar EventQueues pendentes para integração</description>
+        <name>CreateEventQueues</name>
+        <label>Criar EventQueues</label>
+        <locationX>176</locationX>
+        <locationY>1502</locationY>
+        <inputReference>eventQueuesToCreate</inputReference>
+    </recordCreates>
+    <recordLookups>
+        <description>Verificar se existe alguma EventQueue pendente existente relacionada aos Ids passados por parâmetro</description>
+        <name>RelatedPendingEventQueues</name>
+        <label>EventQueues pendentes relacionadas aos Ids</label>
+        <locationX>176</locationX>
+        <locationY>158</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>ExistentEventQueues</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>RecordId__c</field>
+            <operator>In</operator>
+            <value>
+                <elementReference>recordsIds</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>PENDING</stringValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>MuleEventQueue__c</object>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>RelatedPendingEventQueues</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+    <variables>
+        <description>Coleção de Event Queues a serem criadas</description>
+        <name>eventQueuesToCreate</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>MuleEventQueue__c</objectType>
+    </variables>
+    <variables>
+        <description>EventQueue a ser criada</description>
+        <name>eventQueueToCreate</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>MuleEventQueue__c</objectType>
+    </variables>
+    <variables>
+        <description>Nome da integração que será atribuída ao objeto EventQueue a ser processado.</description>
+        <name>integrationName</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Ids dos registros passados por parâmetro</description>
+        <name>recordsIds</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>true</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <description>Ids dos objetos com EventQueues pendentes já existentes para serem ignorados</description>
+        <name>recordsIdsToIgnore</name>
+        <dataType>String</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

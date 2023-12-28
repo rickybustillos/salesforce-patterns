@@ -15,22 +15,6 @@ public class AccountFactory {
         );
     }
 
-    public static Map<String, SObject> integratedScenarioWithContacts () {
-
-        Map<String, SObject> records = new Map<String, SObject>();
-
-        Account account = createAccount( 'Account with Contacts' );
-        records.put( 'account', account );
-
-        Contact contact = ContactFactory.createContact( account );
-        records.put( 'contact', contact );
-
-        AccountContactRelation relation = [ SELECT Id, AccountId, ContactId FROM AccountContactRelation WHERE AccountId = :account.Id AND ContactId = :contact.Id  ];
-        records.put( 'relation', relation );
-
-        return records;
-    }
-
     public static Account createAccount ( String name ) {
         return createAccount( newAccount (name) );
     }

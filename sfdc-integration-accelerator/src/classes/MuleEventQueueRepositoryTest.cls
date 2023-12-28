@@ -9,23 +9,39 @@ public class MuleEventQueueRepositoryTest {
     static void setup(){
         TriggerHandler.bypass('MuleEventQueueHandler');
 
-        MuleEventQueue__c eventQueue = MuleEventQueueFactory.createMuleEventQueue();
+        MuleEventQueue__c muleEventQueue = MuleEventQueueFactory.createMuleEventQueue();
 
         TriggerHandler.clearAllBypasses();
     }
 
     @isTest
-    static void itShouldFindAnEvent() {
+    static void findByIdsTest() {
 
-        MuleEventQueue__c eventQueue = [ SELECT Id, ObjectId__c FROM MuleEventQueue__c LIMIT 1 ];
-
-        Set<String> objectsIds = new Set<String>{ eventQueue.ObjectId__c };
+        Id muleEventQueueId = [ SELECT Id FROM MuleEventQueue__c LIMIT 1 ].Id;
 
         Test.startTest();
 
         MuleEventQueueRepository repository = new MuleEventQueueRepository();
 
-        List<MuleEventQueue__c> storedEventQueues = repository.findPendingByObjectIds( objectsIds, new List<String>() );
+        List<MuleEventQueue__c> muleEventQueues = repository.findByIds( new List<String>{ muleEventQueueId } );
+
+        Test.stopTest();
+
+        Assert.isFalse( muleEventQueues.isEmpty(), 'There should not be empty' );
+    }
+
+    @isTest
+    static void itShouldFindAnEvent() {
+
+        MuleEventQueue__c muleEventQueue = [ SELECT Id, RecordId__c FROM MuleEventQueue__c LIMIT 1 ];
+
+        Set<String> objectsIds = new Set<String>{ muleEventQueue.RecordId__c };
+
+        Test.startTest();
+
+        MuleEventQueueRepository repository = new MuleEventQueueRepository();
+
+        List<MuleEventQueue__c> storedEventQueues = repository.findPendingByRecordsIds( objectsIds, new List<String>() );
 
         Test.stopTest();
 
@@ -39,7 +55,7 @@ public class MuleEventQueueRepositoryTest {
 
         MuleEventQueueRepository repository = new MuleEventQueueRepository();
 
-        List<MuleEventQueue__c> storedEventQueues = repository.findPendingByIntegrationName( MuleIntegrationFactory.TEST_INTEGRATION );
+        List<MuleEventQueue__c> storedEventQueues = repository.findPendingByIntegrationName( MuleEventQueueFactory.TEST_INTEGRATION );
 
         Test.stopTest();
 
@@ -49,19 +65,17 @@ public class MuleEventQueueRepositoryTest {
     @isTest
     static void itShouldFindRetryableEvent() {
 
-        TriggerHandler.bypass('MuleEventQueueHandler');
+        TriggerHandler.bypass('EventQueueTH');
 
-        MuleIntegration__c integration = MuleIntegrationFactory.createMuleIntegration();
-
-        MuleEventQueue__c retryableEventQueue = MuleEventQueueFactory.newMuleEventQueue( integration );
+        MuleEventQueue__c retryableEventQueue = MuleEventQueueFactory.newMuleEventQueue();
         retryableEventQueue.Status__c = MuleEventQueueStatus.TECHNICAL_ERROR.name();
-        retryableEventQueue.ObjectId__c = 'fakeIdRetryable';
+        retryableEventQueue.RecordId__c = 'fakeIdRetryable';
 
         MuleEventQueueFactory.createMuleEventQueue(retryableEventQueue);
 
         TriggerHandler.clearAllBypasses();
 
-        Set<String> integrationNames = new Set<String>{ integration.Name };
+        Set<String> integrationNames = new Set<String>{ retryableEventQueue.MuleIntegrationName__c };
 
         Test.startTest();
 
@@ -77,10 +91,10 @@ public class MuleEventQueueRepositoryTest {
     @isTest
     static void itShouldFindOldRelatedEvent() {
 
-        TriggerHandler.bypass('MuleEventQueueHandler');
+        TriggerHandler.bypass('EventQueueTH');
 
         MuleEventQueue__c oldRelatedEventQueue = MuleEventQueueFactory.newMuleEventQueue();
-        oldRelatedEventQueue.ObjectId__c = 'fakeIdOldRelated';
+        oldRelatedEventQueue.RecordId__c = 'fakeIdOldRelated';
         MuleEventQueueFactory.createMuleEventQueue(oldRelatedEventQueue);
 
         oldRelatedEventQueue.Status__c = MuleEventQueueStatus.TECHNICAL_ERROR.name();
@@ -88,7 +102,7 @@ public class MuleEventQueueRepositoryTest {
 
         TriggerHandler.clearAllBypasses();
 
-        List<String> objectsIds = new List<String>{ oldRelatedEventQueue.ObjectId__c };
+        List<String> objectsIds = new List<String>{ oldRelatedEventQueue.RecordId__c };
 
         Test.startTest();
 
@@ -105,8 +119,7 @@ public class MuleEventQueueRepositoryTest {
 
         String payload;
 
-        public MuleEventQueueRepositoryMock () {
-        }
+        public MuleEventQueueRepositoryMock () {}
 
         public MuleEventQueueRepositoryMock( String payload ) {
             this.payload = payload;

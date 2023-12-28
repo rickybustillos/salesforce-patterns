@@ -1,5 +1,5 @@
 /**
- * @description: Unique trigger for MuleEventQueue__c
+ * @description: Trigger for MuleEventQueue
  * @author: Henrique Bustillos - Everymind
  */
 trigger MuleEventQueue on MuleEventQueue__c (

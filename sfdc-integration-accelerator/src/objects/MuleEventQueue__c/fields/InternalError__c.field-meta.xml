@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>InternalError__c</fullName>
+    <description>If Apex classes threw an exception during the process of the integration, the error message and stack trace will be filled here</description>
+    <externalId>false</externalId>
+    <label>Internal Error</label>
+    <length>2042</length>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>10</visibleLines>
+</CustomField>

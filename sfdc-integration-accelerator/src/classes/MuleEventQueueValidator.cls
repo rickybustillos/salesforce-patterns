@@ -1,29 +1,29 @@
 /**
- * @description: Validator class for MuleEventQueues records
+ * @description: Validator class for EventQueues records
  * @author: Henrique Bustillos - Everymind
  */
 public without sharing class MuleEventQueueValidator {
 
-    public void withNotDuplicatedObjectId ( List<MuleEventQueue__c> eventQueues, List<String> existentPendingIds  ) {
+    public void withNotDuplicatedObjectId ( List<MuleEventQueue__c> muleEventQueues, List<String> existentPendingIds  ) {
 
         Map<String, MuleEventQueue__c> eventQueuesByObjectId = new Map<String, MuleEventQueue__c>();
 
-        for ( MuleEventQueue__c eventQueue : eventQueues ) {
+        for ( MuleEventQueue__c muleEventQueue : muleEventQueues ) {
 
-            if ( this.isDuplicated( eventQueue, existentPendingIds ) ) {
-                eventQueue.addError( 'There is already a pending event queued for this object.' );
+            if ( this.isDuplicated( muleEventQueue, existentPendingIds ) ) {
+                muleEventQueue.addError( 'There is already a pending event queued for this object.' );
             }
 
-            if ( eventQueuesByObjectId.containsKey( eventQueue.ObjectId__c ) ) {
-                eventQueue.addError( 'There is already a pending event queued for this object.' );
+            if ( eventQueuesByObjectId.containsKey( muleEventQueue.RecordId__c ) ) {
+                muleEventQueue.addError( 'There is already a pending event queued for this object.' );
                 continue;
             }
 
-            eventQueuesByObjectId.put( eventQueue.ObjectId__c, eventQueue );
+            eventQueuesByObjectId.put( muleEventQueue.RecordId__c, muleEventQueue );
         }
     }
 
-    private Boolean isDuplicated ( MuleEventQueue__c eventQueue, List<String> existentPendingIds ) {
-        return existentPendingIds.contains( eventQueue.ObjectId__c );
+    private Boolean isDuplicated ( MuleEventQueue__c muleEventQueue, List<String> existentPendingIds ) {
+        return existentPendingIds.contains( muleEventQueue.RecordId__c );
     }
 }

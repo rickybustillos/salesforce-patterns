@@ -6,11 +6,11 @@
 public class RepositoryTest {
 
     @isTest
-    static void creationAndAccountUpdateScenario () {
+    static void creationAndUpdateScenario () {
 
         Account account = AccountFactory.newAccount('AccountName');
 
-        AccountRepository repository = new AccountRepository();
+        TestRepository repository = new TestRepository();
 
         repository.save( account );
 
@@ -29,9 +29,9 @@ public class RepositoryTest {
     }
 
     @isTest
-    static void invalidAccountRemovalErrorScenario () {
+    static void invalidRemovalErrorScenario () {
 
-        AccountRepository repository = new AccountRepository();
+        TestRepository repository = new TestRepository();
 
         Test.startTest();
 
@@ -50,7 +50,7 @@ public class RepositoryTest {
     }
 
     @isTest
-    static void accountRemovalScenario () {
+    static void removalScenario () {
 
         Account account = AccountFactory.createAccount('AccountName');
 
@@ -58,7 +58,7 @@ public class RepositoryTest {
 
         Test.startTest();
 
-        AccountRepository repository = new AccountRepository();
+        TestRepository repository = new TestRepository();
 
         repository.remove( account );
 
@@ -68,4 +68,6 @@ public class RepositoryTest {
 
         System.assert( accounts.isEmpty(), 'Accounts should be empty' );
     }
+
+    public class TestRepository extends Repository {}
 }

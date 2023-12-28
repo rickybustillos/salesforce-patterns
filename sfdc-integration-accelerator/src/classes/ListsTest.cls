@@ -7,9 +7,9 @@ public class ListsTest {
 
     public static List<Account> setup() {
         return new List<Account> {
-            AccountFactory.fromJson('{"Name":"Account 1", "BillingState":"São Paulo", "NumberOfEmployees": 5}'),
-            AccountFactory.fromJson('{"Name":"Account 2", "BillingState":"São Paulo", "NumberOfEmployees": 14}'),
-            AccountFactory.fromJson('{"Name":"Account 3", "BillingState":"Rio de Janeiro", "NumberOfEmployees": 3}')
+            AccountFactory.fromJson('{ "Id": "'+((Id) FixtureFactory.generateFakeId( Account.getSObjectType() ))+'", "Name":"Account 1", "BillingState":"São Paulo", "NumberOfEmployees": 5}'),
+            AccountFactory.fromJson('{ "Id": "'+((Id) FixtureFactory.generateFakeId( Account.getSObjectType() ))+'", "Name":"Account 2", "BillingState":"São Paulo", "NumberOfEmployees": 14, "Parent": {"Name": "ParentAccount 1"} }'),
+            AccountFactory.fromJson('{ "Id": "'+((Id) FixtureFactory.generateFakeId( Account.getSObjectType() ))+'", "Name":"Account 3", "BillingState":"Rio de Janeiro", "NumberOfEmployees": 3, "Parent": {"Name": "ParentAccount 2"} }')
         };
     }
 
